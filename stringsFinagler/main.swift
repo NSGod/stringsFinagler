@@ -7,13 +7,37 @@
 //
 
 import Foundation
+// FIXME: comparison operators with optionals were removed from the Swift Standard Libary.
+// Consider refactoring the code to use the non-optional operators.
+fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l < r
+  case (nil, _?):
+    return true
+  default:
+    return false
+  }
+}
+
+// FIXME: comparison operators with optionals were removed from the Swift Standard Libary.
+// Consider refactoring the code to use the non-optional operators.
+fileprivate func > <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l > r
+  default:
+    return rhs < lhs
+  }
+}
+
 
 let DefaultOutputDir = "~/Desktop/Strings"
 
 let pathExtensions : Set = ["m", "mm", "c", "swift"]
 
 // this is a hack to get a better form of printing arrays that isn't all on one line
-func print(array: [AnyObject], label aLabel: String) {
+func print(_ array: [AnyObject], label aLabel: String) {
 	var description = "\(aLabel) == \r"
 	for object in array {
 		description += "    \(object.description)\r"
@@ -22,14 +46,14 @@ func print(array: [AnyObject], label aLabel: String) {
 }
 
 func version() {
-	let bundle = NSBundle.mainBundle()
-	let bundleVersion = bundle.objectForInfoDictionaryKey(kCFBundleVersionKey as String)!
-	let name = bundle.objectForInfoDictionaryKey(kCFBundleNameKey as String)!
-	let shortVersion = bundle.objectForInfoDictionaryKey("CFBundleShortVersionString")!
+	let bundle = Bundle.main
+	let bundleVersion = bundle.object(forInfoDictionaryKey: kCFBundleVersionKey as String)!
+	let name = bundle.object(forInfoDictionaryKey: kCFBundleNameKey as String)!
+	let shortVersion = bundle.object(forInfoDictionaryKey: "CFBundleShortVersionString")!
 	print("\(name) \(shortVersion) (\(bundleVersion))\n")
 }
 
-func usage(isInvalid : Bool = true) {
+func usage(_ isInvalid : Bool = true) {
 	if isInvalid == true { print("invalid usage") }
 	print("Usage: stringsFinagler [OPTIONS] [files ...]")
 	print("")
@@ -46,22 +70,22 @@ func usage(isInvalid : Bool = true) {
 
 var tempDir : String! = nil
 
-func revisedPathForItemAtPath(path : String) -> String {
+func revisedPathForItemAtPath(_ path : String) -> String {
 	if tempDir == nil {
-		let tempD = (NSTemporaryDirectory() as NSString).stringByAppendingPathComponent("com.markdouma.stringsFinagler.XXXXXXXXXX")
-		let cs = (tempD as NSString).UTF8String
-		let buffer = UnsafeMutablePointer<Int8>(cs)
-		tempDir = String.fromCString(mkdtemp(buffer))
-		_ = try? NSFileManager.defaultManager().createDirectoryAtURL(NSURL(fileURLWithPath: tempDir), withIntermediateDirectories: true, attributes: nil)
+		let tempD = (NSTemporaryDirectory() as NSString).appendingPathComponent("com.markdouma.stringsFinagler.XXXXXXXXXX")
+		let cs = (tempD as NSString).utf8String
+		let buffer = UnsafeMutablePointer<Int8>(mutating: cs)
+		tempDir = String(cString: mkdtemp(buffer))
+		_ = try? FileManager.default.createDirectory(at: URL(fileURLWithPath: tempDir), withIntermediateDirectories: true, attributes: nil)
 	}
-	let templatePath = (tempDir as NSString).stringByAppendingPathComponent((path as NSString).lastPathComponent + ".XXXXXXXXX")
-	let buffer = UnsafeMutablePointer<Int8>((templatePath as NSString).UTF8String)
-	let revisedPath = String.fromCString(mktemp(buffer))!
+	let templatePath = (tempDir as NSString).appendingPathComponent((path as NSString).lastPathComponent + ".XXXXXXXXX")
+	let buffer = UnsafeMutablePointer<Int8>(mutating: (templatePath as NSString).utf8String)
+	let revisedPath = String(cString: mktemp(buffer))
 	return revisedPath
 }
 
 
-var args = Process.arguments
+var args = CommandLine.arguments
 
 guard args.count > 1 else {
 	usage()
@@ -69,15 +93,15 @@ guard args.count > 1 else {
 }
 
 
-var outputDirectoryPath = (DefaultOutputDir as NSString).stringByExpandingTildeInPath
+var outputDirectoryPath = (DefaultOutputDir as NSString).expandingTildeInPath
 
 var substitutionString : String? = nil
 
-_ = args.removeAtIndex(0)
+_ = args.remove(at: 0)
 
 let argsCount = args.count
 
-var options : NSDirectoryEnumerationOptions = [.SkipsHiddenFiles, .SkipsSubdirectoryDescendants]
+var options : FileManager.DirectoryEnumerationOptions = [.skipsHiddenFiles, .skipsSubdirectoryDescendants]
 
 var paths = [String]()
 
@@ -85,7 +109,7 @@ var defaultComments = false
 
 var i = 0
 
-for (index, value) in args.enumerate() {
+for (index, value) in args.enumerated() {
 	if value == "-v" || value == "--version" {
 		version()
 		exit(EXIT_SUCCESS)
@@ -97,7 +121,7 @@ for (index, value) in args.enumerate() {
 		defaultComments = true
 		i += 1
 	} else if value == "-R" || value == "-r" {
-		options.remove(.SkipsSubdirectoryDescendants)
+		options.remove(.skipsSubdirectoryDescendants)
 		i += 1
 	} else if value == "-o" {
 		if index + 1 < argsCount {
@@ -112,35 +136,36 @@ for (index, value) in args.enumerate() {
 	} else {
 		if i == index {
 			paths.append(value)
+			i += 1
 		}
 	}
 }
 
-print(paths, label: "paths")
+print(paths as [AnyObject], label: "paths")
 
 guard !paths.isEmpty else {
 	usage()
 	exit(EXIT_FAILURE)
 }
 
-var revisedURLs = [NSURL]()
+var revisedURLs = [URL]()
 
-let fileManager = NSFileManager.defaultManager()
+let fileManager = FileManager.default
 
 for path in paths {
-	let url = NSURL(fileURLWithPath:path)
+	let url = URL(fileURLWithPath:path)
 	
-	if let isDir = try? url.resourceValuesForKeys([NSURLIsDirectoryKey])[NSURLIsDirectoryKey]?.boolValue where isDir == true {
-		if let enumerator = fileManager.enumeratorAtURL(url, includingPropertiesForKeys:nil, options:options, errorHandler:nil) {
-			guard let allItems = enumerator.allObjects as? [NSURL] else { continue }
+	if let isDir = try? ((url as NSURL).resourceValues(forKeys: [URLResourceKey.isDirectoryKey])[URLResourceKey.isDirectoryKey] as AnyObject).boolValue, isDir == true {
+		if let enumerator = fileManager.enumerator(at: url, includingPropertiesForKeys:nil, options:options, errorHandler:nil) {
+			guard let allItems = enumerator.allObjects as? [URL] else { continue }
 //			print(allItems, label: "allItems")
 			for innerurl in allItems {
-				if pathExtensions.contains(innerurl.pathExtension!.lowercaseString) { revisedURLs.append(innerurl) }
+				if pathExtensions.contains(innerurl.pathExtension.lowercased()) { revisedURLs.append(innerurl) }
 			}
 		}
 		
 	} else {
-		if pathExtensions.contains(url.pathExtension!.lowercaseString) { revisedURLs.append(url) }
+		if pathExtensions.contains(url.pathExtension.lowercased()) { revisedURLs.append(url) }
 	}
 	
 }
@@ -154,20 +179,20 @@ let subStringP = substitutionString != nil ? substitutionString! + "(" : "NSLoca
 var revisedPaths = [String]()
 
 for itemURL in revisedURLs {
-	var encoding : NSStringEncoding = NSUTF8StringEncoding
-	if let sourceCodeString = try? NSString(contentsOfURL:itemURL, usedEncoding: &encoding) {
-		if sourceCodeString.rangeOfString(subString, options:[.LiteralSearch]).location != NSNotFound { revisedPaths.append(itemURL.path!) }
+	var encoding : String.Encoding = String.Encoding.utf8
+	if let sourceCodeString = try? NSString(contentsOf:itemURL, usedEncoding: &encoding.rawValue) {
+		if sourceCodeString.range(of: subString, options:[.literal]).location != NSNotFound { revisedPaths.append(itemURL.path) }
 	}
 }
 
-print(revisedPaths, label: "revisedPaths")
+print(revisedPaths as [AnyObject], label: "revisedPaths")
 
 guard !revisedPaths.isEmpty else {
 	NSLog("NOTICE: no '.strings' files were produced");
 	exit(EXIT_SUCCESS)
 }
 
-guard let success = try? fileManager.createDirectoryAtURL(NSURL(fileURLWithPath:outputDirectoryPath), withIntermediateDirectories: true, attributes: nil) else {
+guard let success = try? fileManager.createDirectory(at: URL(fileURLWithPath:outputDirectoryPath), withIntermediateDirectories: true, attributes: nil) else {
 	fatalError("failed to create output directory at \"\(outputDirectoryPath)\"")
 }
 
@@ -179,19 +204,19 @@ if defaultComments == true {
 		let transRevisedPath = revisedPathForItemAtPath(revisedPath)
 		
 		if transRevisedPath != revisedPath {
-			_ = try fileManager.copyItemAtPath(revisedPath, toPath: transRevisedPath)
+			_ = try fileManager.copyItem(atPath: revisedPath, toPath: transRevisedPath)
 			transRevisedPaths.append(transRevisedPath)
 		}
 	}
 	
 	for transRevisedPath in transRevisedPaths {
-		var encoding : NSStringEncoding = NSUTF8StringEncoding
+		var encoding : String.Encoding = String.Encoding.utf8
 		
 		if let sourceCodeString = try? String(contentsOfFile: transRevisedPath, usedEncoding: &encoding) {
 			var adaptedString = ""
 			
-			let scanner = NSScanner(string: sourceCodeString)
-			scanner.charactersToBeSkipped = NSCharacterSet(charactersInString: "")
+			let scanner = Scanner(string: sourceCodeString)
+			scanner.charactersToBeSkipped = CharacterSet(charactersIn: "")
 			scanner.caseSensitive = true
 			
 			var scanLocation = 0
@@ -199,11 +224,11 @@ if defaultComments == true {
 			var result : NSString? = nil
 			var localizedString : NSString? = nil
 			
-			while scanner.atEnd == false {
-				if scanner.scanUpToString(subStringP, intoString: &result) &&
-					scanner.scanString(subStringP, intoString: nil) &&
-					scanner.scanUpToString("\")", intoString: &localizedString) &&
-					scanner.scanString("\")", intoString: nil) {
+			while scanner.isAtEnd == false {
+				if scanner.scanUpTo(subStringP, into: &result) &&
+					scanner.scanString(subStringP, into: nil) &&
+					scanner.scanUpTo("\")", into: &localizedString) &&
+					scanner.scanString("\")", into: nil) {
 					
 					if result?.length > 0 {
 						adaptedString += result! as String
@@ -214,24 +239,24 @@ if defaultComments == true {
 					
 					if let locString = localizedString {
 						adaptedString += (locString as String) + "\""
-						if locString.rangeOfString(" comment:", options: [.LiteralSearch]).location == NSNotFound {
+						if locString.range(of: " comment:", options: [.literal]).location == NSNotFound {
 							adaptedString += ", comment:\"\")"
 						} else {
 							adaptedString += ")"
 						}
 					}
 				} else {
-					adaptedString += (sourceCodeString as NSString).substringFromIndex(scanLocation)
+					adaptedString += (sourceCodeString as NSString).substring(from: scanLocation)
 				}
 			}
-			_ = try? adaptedString.writeToFile(transRevisedPath, atomically: true, encoding: NSUTF8StringEncoding)
+			_ = try? adaptedString.write(toFile: transRevisedPath, atomically: true, encoding: String.Encoding.utf8)
 		}
 	}
 	revisedPaths = transRevisedPaths
 }
 
 
-let task = NSTask()
+let task = Process()
 task.launchPath = "/usr/bin/genstrings"
 
 var taskArgs = ["-a"]
@@ -245,37 +270,31 @@ taskArgs += revisedPaths
 
 task.arguments = taskArgs
 
-task.standardOutput = NSPipe()
-task.standardError = NSPipe()
+task.standardOutput = Pipe()
+task.standardError = Pipe()
 task.launch()
 task.waitUntilExit()
 
-let data = task.standardOutput!.fileHandleForReading.readDataToEndOfFile()
-if data.length > 0 {
-	if let string = String(data:data, encoding:NSUTF8StringEncoding) {
+let data = (task.standardOutput! as AnyObject).fileHandleForReading.readDataToEndOfFile()
+if data.count > 0 {
+	if let string = String(data:data, encoding:String.Encoding.utf8) {
 		NSLog("standardOutput == \(string)")
 	}
 }
 
-let errData = task.standardError!.fileHandleForReading.readDataToEndOfFile()
-if errData.length > 0 {
-	if let stdErrorString = String(data:errData, encoding:NSUTF8StringEncoding) {
+let errData = (task.standardError! as AnyObject).fileHandleForReading.readDataToEndOfFile()
+if errData.count > 0 {
+	if let stdErrorString = String(data:errData, encoding:String.Encoding.utf8) {
 		NSLog("standardError == \(stdErrorString)")
 	}
 }
 
-if !task.running {
+if !task.isRunning {
 	if task.terminationStatus != 0 {
 		NSLog("task.terminationStatus == \(task.terminationStatus)")
 	}
 }
 
-if tempDir != nil { _ = try? fileManager.removeItemAtPath(tempDir) }
-
+if tempDir != nil { _ = try? fileManager.removeItem(atPath: tempDir) }
 
 exit(EXIT_SUCCESS)
-
-
-
-
-

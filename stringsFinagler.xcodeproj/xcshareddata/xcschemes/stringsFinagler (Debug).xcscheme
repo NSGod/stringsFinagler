@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "0800"
+   LastUpgradeVersion = "1010"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -61,6 +61,32 @@
             ReferencedContainer = "container:stringsFinagler.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
+      <CommandLineArguments>
+         <CommandLineArgument
+            argument = "-R"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "&quot;/Users/mdouma46/Developer/Font Finagler (REWRITE) 2.0 (xc9)/FontFinagler&quot;"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "&quot;/Users/mdouma46/Developer/Font Finagler (REWRITE) 1.5 (xc9) TWEAK/FontFinagler/_MDAdobeFontCacheFileController.m&quot;"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "&quot;/Users/mdouma46/Developer/Font Finagler (REWRITE) 1.5 (xc9) TWEAK/FontFinagler/_MDCleansRemainingManager.m&quot;"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "&quot;/Users/mdouma46/Developer/Font Finagler (REWRITE) 1.5 (xc9) TWEAK/FontFinagler/_MDFontCacheFileController.m&quot;"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "&quot;/Users/mdouma46/Developer/Font Finagler (REWRITE) 1.5 (xc9) TWEAK/FontFinagler/_MDMicrosoftFontCacheFileController.m&quot;"
+            isEnabled = "YES">
+         </CommandLineArgument>
+      </CommandLineArguments>
       <AdditionalOptions>
       </AdditionalOptions>
    </LaunchAction>

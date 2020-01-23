@@ -1,7 +1,7 @@
 stringsFinagler
 =====================
-For OS X 10.10+  
-Written in Swift 2.2  
+For OS X 10.13+ 
+Written in Swift 4.2  
 
 `stringsFinagler` is wrapper around the `genstrings` tool, used to generate `Localizable.strings` files for targets in an Xcode project.
 
