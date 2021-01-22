@@ -155,7 +155,7 @@ let fileManager = FileManager.default
 for path in paths {
 	let url = URL(fileURLWithPath:path)
 	
-	if let isDir = try? ((url as NSURL).resourceValues(forKeys: [URLResourceKey.isDirectoryKey])[URLResourceKey.isDirectoryKey] as AnyObject).boolValue, isDir == true {
+	if let isDir = ((try? ((url as NSURL).resourceValues(forKeys: [URLResourceKey.isDirectoryKey])[URLResourceKey.isDirectoryKey] as AnyObject).boolValue) as Bool??), isDir == true {
 		if let enumerator = fileManager.enumerator(at: url, includingPropertiesForKeys:nil, options:options, errorHandler:nil) {
 			guard let allItems = enumerator.allObjects as? [URL] else { continue }
 //			print(allItems, label: "allItems")
@@ -273,7 +273,6 @@ task.arguments = taskArgs
 task.standardOutput = Pipe()
 task.standardError = Pipe()
 task.launch()
-task.waitUntilExit()
 
 let data = (task.standardOutput! as AnyObject).fileHandleForReading.readDataToEndOfFile()
 if data.count > 0 {
@@ -288,6 +287,8 @@ if errData.count > 0 {
 		NSLog("standardError == \(stdErrorString)")
 	}
 }
+
+task.waitUntilExit()
 
 if !task.isRunning {
 	if task.terminationStatus != 0 {

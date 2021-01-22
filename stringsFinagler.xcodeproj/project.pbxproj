@@ -80,24 +80,25 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0800;
-				LastUpgradeCheck = 1010;
+				LastUpgradeCheck = 1230;
 				ORGANIZATIONNAME = "Mark Douma";
 				TargetAttributes = {
 					C1CE58281D328DB0005E381C = {
 						CreatedOnToolsVersion = 8.0;
 						DevelopmentTeam = YP47SDZM4G;
 						DevelopmentTeamName = "Mark Douma";
-						LastSwiftMigration = 1010;
+						LastSwiftMigration = 1230;
 						ProvisioningStyle = Manual;
 					};
 				};
 			};
 			buildConfigurationList = C1CE58241D328DB0005E381C /* Build configuration list for PBXProject "stringsFinagler" */;
 			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				Base,
 			);
 			mainGroup = C1CE58201D328DB0005E381C;
 			productRefGroup = C1CE582A1D328DB0005E381C /* Products */;
@@ -125,6 +126,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -145,6 +147,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -181,6 +184,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -201,6 +205,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -231,13 +236,14 @@
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "Developer ID Application";
 				CREATE_INFOPLIST_SECTION_IN_BINARY = YES;
-				CURRENT_PROJECT_VERSION = 103;
+				CURRENT_PROJECT_VERSION = 104;
 				DEVELOPMENT_TEAM = YP47SDZM4G;
+				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = stringsFinagler/Info.plist;
 				INFOPLIST_PREPROCESS = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.markdouma.stringsFinagler;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
@@ -247,13 +253,14 @@
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "Developer ID Application";
 				CREATE_INFOPLIST_SECTION_IN_BINARY = YES;
-				CURRENT_PROJECT_VERSION = 103;
+				CURRENT_PROJECT_VERSION = 104;
 				DEVELOPMENT_TEAM = YP47SDZM4G;
+				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = stringsFinagler/Info.plist;
 				INFOPLIST_PREPROCESS = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.markdouma.stringsFinagler;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;
